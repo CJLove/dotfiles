@@ -1,0 +1,906 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>find-file.el</title>
+<style type="text/css">
+.enscript-comment { font-style: italic; color: rgb(178,34,34); }
+.enscript-function-name { font-weight: bold; color: rgb(0,0,255); }
+.enscript-variable-name { font-weight: bold; color: rgb(184,134,11); }
+.enscript-keyword { font-weight: bold; color: rgb(160,32,240); }
+.enscript-reference { font-weight: bold; color: rgb(95,158,160); }
+.enscript-string { font-weight: bold; color: rgb(188,143,143); }
+.enscript-builtin { font-weight: bold; color: rgb(218,112,214); }
+.enscript-type { font-weight: bold; color: rgb(34,139,34); }
+.enscript-highlight { text-decoration: underline; color: 0; }
+</style>
+</head>
+<body id="top">
+<h1 style="margin:8px;" id="f1">find-file.el&nbsp;&nbsp;&nbsp;<span style="font-weight: normal; font-size: 0.5em;">[<a href="http://www.opensource.apple.com/source/emacs/emacs-51/emacs/lisp/find-file.el?txt">plain text</a>]</span></h1>
+<hr>
+<div></div>
+<pre><span class="enscript-comment">;;; find-file.el --- find a file corresponding to this one given a pattern
+</span>
+<span class="enscript-comment">;; Author: Henry Guillaume &lt;<a href="mailto:henri@tibco.com">henri@tibco.com</a>, <a href="mailto:henry@c032.aone.net.au">henry@c032.aone.net.au</a>&gt;
+</span><span class="enscript-comment">;; Maintainer: FSF
+</span><span class="enscript-comment">;; Keywords: c, matching, tools
+</span>
+<span class="enscript-comment">;; Copyright (C) 1994, 1995 Free Software Foundation, Inc.
+</span>
+<span class="enscript-comment">;; This file is part of GNU Emacs.
+</span>
+<span class="enscript-comment">;; GNU Emacs is free software; you can redistribute it and/or modify
+</span><span class="enscript-comment">;; it under the terms of the GNU General Public License as published by
+</span><span class="enscript-comment">;; the Free Software Foundation; either version 2, or (at your option)
+</span><span class="enscript-comment">;; any later version.
+</span>
+<span class="enscript-comment">;; GNU Emacs is distributed in the hope that it will be useful,
+</span><span class="enscript-comment">;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+</span><span class="enscript-comment">;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+</span><span class="enscript-comment">;; GNU General Public License for more details.
+</span>
+<span class="enscript-comment">;; You should have received a copy of the GNU General Public License
+</span><span class="enscript-comment">;; along with GNU Emacs; see the file COPYING.  If not, write to the
+</span><span class="enscript-comment">;; Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+</span><span class="enscript-comment">;; Boston, MA 02111-1307, USA.
+</span>
+<span class="enscript-comment">;;; Commentary:
+</span>
+<span class="enscript-comment">;; PURPOSE:
+</span><span class="enscript-comment">;; This package features a function called ff-find-other-file, which performs
+</span><span class="enscript-comment">;; the following function:
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;;     When in a .c file, find the first corresponding .h file in a set
+</span><span class="enscript-comment">;;     of directories and display it, and vice-versa from the .h file.
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; Many people maintain their include file in a directory separate to their
+</span><span class="enscript-comment">;; src directory, and very often you may be editing a file and have a need to
+</span><span class="enscript-comment">;; visit the "other file". This package searches through a set of directories
+</span><span class="enscript-comment">;; to find that file.
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; THE "OTHER FILE", or "corresponding file", generally has the same basename,
+</span><span class="enscript-comment">;; and just has a different extension as described by the ff-other-file-alist
+</span><span class="enscript-comment">;; variable:
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;;   '(("\\.cc$"  (".hh" ".h"))
+</span><span class="enscript-comment">;;     ("\\.hh$"  (".cc" ".C" ".CC" ".cxx" ".cpp")))
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; If the current file has a .cc extension, ff-find-other-file will attempt
+</span><span class="enscript-comment">;; to look for a .hh file, and then a .h file in some directory as described
+</span><span class="enscript-comment">;; below. The mechanism here is to replace the matched part of the original
+</span><span class="enscript-comment">;; filename with each of the corresponding extensions in turn.
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; Alternatively, there are situations where the filename of the other file
+</span><span class="enscript-comment">;; cannot be determined easily with regexps. For example, a .c file may
+</span><span class="enscript-comment">;; have two corresponding .h files, for its public and private parts, or
+</span><span class="enscript-comment">;; the filename for the .c file contains part of the pathname of the .h
+</span><span class="enscript-comment">;; file, as between src/fooZap.cc and include/FOO/zap.hh. In that case, the
+</span><span class="enscript-comment">;; format above can be changed to include a function to be called when the
+</span><span class="enscript-comment">;; current file matches the regexp:
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;;   '(("\\.cc$"  cc-function)
+</span><span class="enscript-comment">;;     ("\\.hh$"  hh-function))
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; These functions must return a list consisting of the possible names of the
+</span><span class="enscript-comment">;; corresponding file, with or without path. There is no real need for more
+</span><span class="enscript-comment">;; than one function, and one could imagine the following value for cc-other-
+</span><span class="enscript-comment">;; file-alist:
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;;    (setq cc-other-file-alist
+</span><span class="enscript-comment">;;        '(("\\.cc$"  ff-cc-hh-converter)
+</span><span class="enscript-comment">;;          ("\\.hh$"  ff-cc-hh-converter)
+</span><span class="enscript-comment">;;          ("\\.c$"   (".h"))
+</span><span class="enscript-comment">;;          ("\\.h$"   (".c" ".cc" ".C" ".CC" ".cxx" ".cpp"))))
+</span><span class="enscript-comment">;; 
+</span><span class="enscript-comment">;; ff-cc-hh-converter is included at the end of this file as a reference.
+</span><span class="enscript-comment">;; 
+</span><span class="enscript-comment">;; SEARCHING is carried out in a set of directories specified by the
+</span><span class="enscript-comment">;; ff-search-directories variable:
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;;     ("." "../../src" "../include/*" "/usr/local/*/src/*" "$PROJECT/src")
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; This means that the corresponding file will be searched for first in
+</span><span class="enscript-comment">;; the current directory, then in ../../src, then in one of the directories
+</span><span class="enscript-comment">;; under ../include, and so on. The star is _not_ a general wildcard
+</span><span class="enscript-comment">;; character: it just indicates that the subdirectories of this directory
+</span><span class="enscript-comment">;; must each be searched in turn. Environment variables will be expanded in
+</span><span class="enscript-comment">;; the ff-search-directories variable.
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; If the point is on a #include line, the file to be #included is searched
+</span><span class="enscript-comment">;; for in the same manner. This can be disabled with the ff-ignore-include
+</span><span class="enscript-comment">;; variable, or by calling ff-get-other-file instead of ff-find-other-file.
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; If the file was not found, ff-find-other-file will prompt you for where
+</span><span class="enscript-comment">;; to create the new "corresponding file" (defaults to the current directory),
+</span><span class="enscript-comment">;; unless the variable ff-always-try-to-create is set to nil.
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; GIVEN AN ARGUMENT (with the ^U prefix), ff-find-other-file will get the
+</span><span class="enscript-comment">;; other file in another (the other?) window (see find-file-other-window and
+</span><span class="enscript-comment">;; switch-to-buffer-other-window). This can be set on a more permanent basis
+</span><span class="enscript-comment">;; by setting ff-always-in-other-window to t in which case the ^U prefix will
+</span><span class="enscript-comment">;; do the opposite of what was described above.
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; THERE ARE FIVE AVAILABLE HOOKS, called in this order if non-nil:
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; - ff-pre-find-hooks     - called before the search for the other file starts
+</span><span class="enscript-comment">;; - ff-not-found-hooks    - called when the other file could not be found
+</span><span class="enscript-comment">;; - ff-pre-load-hooks     - called just before the other file is 'loaded'
+</span><span class="enscript-comment">;; - ff-file-created-hooks - called when the other file is created
+</span><span class="enscript-comment">;; - ff-post-load-hooks    - called just after the other file is 'loaded'
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; The *load-hooks allow you to place point where you want it in the other
+</span><span class="enscript-comment">;; file.
+</span>
+<span class="enscript-comment">;; CREDITS:
+</span><span class="enscript-comment">;; Many thanks go to TUSC Computer Systems Pty Ltd for providing an environ-
+</span><span class="enscript-comment">;; ment that made the development of this package possible.
+</span><span class="enscript-comment">;;
+</span><span class="enscript-comment">;; Many thanks also go to all those who provided valuable feedback throughout
+</span><span class="enscript-comment">;; the development of this package:
+</span><span class="enscript-comment">;;     Rolf Ebert in particular, Fritz Knabe, Heddy Boubaker, Sebastian Kremer,
+</span><span class="enscript-comment">;;     Vasco Lopes Paulo, Mark A. Plaksin, Robert Lang, Trevor West, Kevin
+</span><span class="enscript-comment">;;     Pereira, Benedict Lofstedt &amp; Justin Vallon.
+</span>
+<span class="enscript-comment">;;; Code:
+</span><span class="enscript-comment">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+</span><span class="enscript-comment">;; User definable variables:
+</span>
+(defgroup ff nil
+  <span class="enscript-string">"Find a file corresponding to this one given a pattern."</span>
+  <span class="enscript-reference">:prefix</span> <span class="enscript-string">"ff-"</span>
+  <span class="enscript-reference">:link</span> '(emacs-commentary-link <span class="enscript-string">"find-file"</span>)
+  <span class="enscript-reference">:group</span> 'find-file)
+
+(defcustom ff-pre-find-hooks nil
+  <span class="enscript-string">"*List of functions to be called before the search for the file starts."</span>
+  <span class="enscript-reference">:type</span> 'hook
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom ff-pre-load-hooks nil
+  <span class="enscript-string">"*List of functions to be called before the other file is loaded."</span>
+  <span class="enscript-reference">:type</span> 'hook
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom ff-post-load-hooks nil
+  <span class="enscript-string">"*List of functions to be called after the other file is loaded."</span>
+  <span class="enscript-reference">:type</span> 'hook
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom ff-not-found-hooks nil
+  <span class="enscript-string">"*List of functions to be called if the other file could not be found."</span>
+  <span class="enscript-reference">:type</span> 'hook
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom ff-file-created-hooks nil
+  <span class="enscript-string">"*List of functions to be called if the other file needs to be created."</span>
+  <span class="enscript-reference">:type</span> 'hook
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom ff-case-fold-search nil
+  <span class="enscript-string">"*Non-nil means ignore cases in matches (see `case-fold-search').
+If you have extensions in different cases, you will want this to be nil."</span>
+  <span class="enscript-reference">:type</span> 'boolean
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom ff-always-in-other-window nil
+  <span class="enscript-string">"*If non-nil, find the corresponding file in another window by default.
+To override this, give an argument to `ff-find-other-file'."</span>
+  <span class="enscript-reference">:type</span> 'boolean
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom ff-ignore-include nil
+  <span class="enscript-string">"*If non-nil, ignore `#include' lines."</span>
+  <span class="enscript-reference">:type</span> 'boolean
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom ff-always-try-to-create t
+  <span class="enscript-string">"*If non-nil, always attempt to create the other file if it was not found."</span>
+  <span class="enscript-reference">:type</span> 'boolean
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom ff-quiet-mode nil
+  <span class="enscript-string">"*If non-nil, trace which directories are being searched."</span>
+  <span class="enscript-reference">:type</span> 'boolean
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defvar ff-special-constructs
+  '(
+    <span class="enscript-comment">;; C/C++ include, for NeXTSTEP too
+</span>    (<span class="enscript-string">"^\#\\s *\\(include\\|import\\)\\s +[&lt;\"]\\(.*\\)[&gt;\"]"</span> .
+     (<span class="enscript-keyword">lambda</span> ()
+       (setq fname (buffer-substring (match-beginning 2) (match-end 2)))))
+
+    <span class="enscript-comment">;; Ada import
+</span>    (<span class="enscript-string">"^with[ \t]+\\([a-zA-Z0-9_\\.]+\\)"</span> .
+     (<span class="enscript-keyword">lambda</span> ()
+       (setq fname (buffer-substring (match-beginning 1) (match-end 1)))
+       (require 'ada-mode)
+       (setq fname (concat (ada-make-filename-from-adaname fname)
+			   ada-spec-suffix))))
+    )
+  <span class="enscript-string">"*A list of regular expressions for `ff-find-file'.
+Specifies how to recognise special constructs such as include files
+etc. and an associated method for extracting the filename from that
+construct."</span>)
+
+(defcustom ff-other-file-alist 'cc-other-file-alist
+  <span class="enscript-string">"*Alist of extensions to find given the current file's extension.
+
+This list should contain the most used extensions before the others,
+since the search algorithm searches sequentially through each
+directory specified in `ff-search-directories'.  If a file is not found,
+a new one is created with the first matching extension (`.cc' yields `.hh').
+This alist should be set by the major mode."</span>
+  <span class="enscript-reference">:type</span> '(choice (repeat (list regexp (choice (repeat string) function)))
+		 symbol)
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom ff-search-directories 'cc-search-directories
+  <span class="enscript-string">"*List of directories to search for a specific file.
+
+Set by default to `cc-search-directories', expanded at run-time.
+
+This list is searched through with each extension specified in
+`ff-other-file-alist' that matches this file's extension.  So the
+longer the list, the longer it'll take to realise that a file
+may not exist.
+
+A typical format is
+
+    '(\".\" \"/usr/include\" \"$PROJECT/*/include\")
+
+Environment variables can be inserted between slashes (`/').
+They will be replaced by their definition. If a variable does
+not exist, it is replaced (silently) with an empty string.
+
+The stars are *not* wildcards: they are searched for together with
+the preceding slash.  The star represents all the subdirectories except
+`..', and each of these subdirectories will be searched in turn."</span>
+  <span class="enscript-reference">:type</span> '(choice (repeat directory) symbol)
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom cc-search-directories
+  '(<span class="enscript-string">"."</span> <span class="enscript-string">"/usr/include"</span> <span class="enscript-string">"/usr/local/include/*"</span>)
+  <span class="enscript-string">"*See the description of the `ff-search-directories' variable."</span>
+  <span class="enscript-reference">:type</span> '(repeat directory)
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom cc-other-file-alist
+  '(
+    (<span class="enscript-string">"\\.cc$"</span>  (<span class="enscript-string">".hh"</span> <span class="enscript-string">".h"</span>))
+    (<span class="enscript-string">"\\.hh$"</span>  (<span class="enscript-string">".cc"</span> <span class="enscript-string">".C"</span>))
+
+    (<span class="enscript-string">"\\.c$"</span>   (<span class="enscript-string">".h"</span>))
+    (<span class="enscript-string">"\\.h$"</span>   (<span class="enscript-string">".c"</span> <span class="enscript-string">".cc"</span> <span class="enscript-string">".C"</span> <span class="enscript-string">".CC"</span> <span class="enscript-string">".cxx"</span> <span class="enscript-string">".cpp"</span>))
+
+    (<span class="enscript-string">"\\.C$"</span>   (<span class="enscript-string">".H"</span>  <span class="enscript-string">".hh"</span> <span class="enscript-string">".h"</span>))
+    (<span class="enscript-string">"\\.H$"</span>   (<span class="enscript-string">".C"</span>  <span class="enscript-string">".CC"</span>))
+
+    (<span class="enscript-string">"\\.CC$"</span>  (<span class="enscript-string">".HH"</span> <span class="enscript-string">".H"</span>  <span class="enscript-string">".hh"</span> <span class="enscript-string">".h"</span>))
+    (<span class="enscript-string">"\\.HH$"</span>  (<span class="enscript-string">".CC"</span>))
+
+    (<span class="enscript-string">"\\.cxx$"</span> (<span class="enscript-string">".hh"</span> <span class="enscript-string">".h"</span>))
+    (<span class="enscript-string">"\\.cpp$"</span> (<span class="enscript-string">".hh"</span> <span class="enscript-string">".h"</span>))
+    )
+  <span class="enscript-string">"*Alist of extensions to find given the current file's extension.
+
+This list should contain the most used extensions before the others,
+since the search algorithm searches sequentially through each directory
+specified in `ff-search-directories'.  If a file is not found, a new one
+is created with the first matching extension (`.cc' yields `.hh')."</span>
+  <span class="enscript-reference">:type</span> '(repeat (list regexp (choice (repeat string) function)))
+  <span class="enscript-reference">:group</span> 'ff)
+
+(defcustom modula2-other-file-alist
+  '(
+    (<span class="enscript-string">"\\.mi$"</span> (<span class="enscript-string">".md"</span>)) <span class="enscript-comment">;; Modula-2 module definition
+</span>    (<span class="enscript-string">"\\.md$"</span> (<span class="enscript-string">".mi"</span>)) <span class="enscript-comment">;; and implementation.
+</span>    )
+  <span class="enscript-string">"*See the description for the `ff-search-directories' variable."</span>
+  <span class="enscript-reference">:type</span> '(repeat (list regexp (choice (repeat string) function)))
+  <span class="enscript-reference">:group</span> 'ff)
+
+
+<span class="enscript-comment">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+</span><span class="enscript-comment">;; No user definable variables beyond this point!
+</span><span class="enscript-comment">;; ==============================================
+</span>
+(make-variable-buffer-local 'ff-pre-find-hooks)
+(make-variable-buffer-local 'ff-pre-load-hooks)
+(make-variable-buffer-local 'ff-post-load-hooks)
+(make-variable-buffer-local 'ff-not-found-hooks)
+(make-variable-buffer-local 'ff-file-created-hooks)
+(make-variable-buffer-local 'ff-case-fold-search)
+(make-variable-buffer-local 'ff-always-in-other-window)
+(make-variable-buffer-local 'ff-ignore-include)
+(make-variable-buffer-local 'ff-quiet-mode)
+(make-variable-buffer-local 'ff-other-file-alist)
+(make-variable-buffer-local 'ff-search-directories)
+
+<span class="enscript-comment">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+</span><span class="enscript-comment">;; User entry points
+</span>
+<span class="enscript-comment">;;;###autoload
+</span>(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-get-other-file</span> (&amp;optional in-other-window)
+  <span class="enscript-string">"Find the header or source file corresponding to this file.
+See also the documentation for `ff-find-other-file'.
+
+If optional IN-OTHER-WINDOW is non-nil, find the file in another window."</span>
+  (interactive <span class="enscript-string">"P"</span>)
+  (<span class="enscript-keyword">let</span> ((ignore ff-ignore-include))
+    (setq ff-ignore-include t)
+    (ff-find-the-other-file in-other-window)
+    (setq ff-ignore-include ignore)))
+
+<span class="enscript-comment">;;;###autoload
+</span>(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-find-other-file</span> (&amp;optional in-other-window ignore-include)
+  <span class="enscript-string">"Find the header or source file corresponding to this file.
+Being on a `#include' line pulls in that file.
+
+If optional IN-OTHER-WINDOW is non-nil, find the file in the other window.
+If optional IGNORE-INCLUDE is non-nil, ignore being on `#include' lines.
+
+Variables of interest include:
+
+ - `ff-case-fold-search'
+   Non-nil means ignore cases in matches (see `case-fold-search').
+   If you have extensions in different cases, you will want this to be nil.
+
+ - `ff-always-in-other-window'
+   If non-nil, always open the other file in another window, unless an
+   argument is given to `ff-find-other-file'.
+
+ - `ff-ignore-include'
+   If non-nil, ignores #include lines.
+
+ - `ff-always-try-to-create'
+   If non-nil, always attempt to create the other file if it was not found.
+
+ - `ff-quiet-mode'
+   If non-nil, traces which directories are being searched.
+
+ - `ff-special-constructs'
+   A list of regular expressions specifying how to recognise special
+   constructs such as include files etc, and an associated method for
+   extracting the filename from that construct.
+
+ - `ff-other-file-alist'
+   Alist of extensions to find given the current file's extension.
+
+ - `ff-search-directories'
+   List of directories searched through with each extension specified in
+   `ff-other-file-alist' that matches this file's extension.
+
+ - `ff-pre-find-hooks'
+   List of functions to be called before the search for the file starts.
+
+ - `ff-pre-load-hooks'
+   List of functions to be called before the other file is loaded.
+
+ - `ff-post-load-hooks'
+   List of functions to be called after the other file is loaded.
+
+ - `ff-not-found-hooks'
+   List of functions to be called if the other file could not be found.
+
+ - `ff-file-created-hooks'
+   List of functions to be called if the other file has been created."</span>
+  (interactive <span class="enscript-string">"P"</span>)
+  (<span class="enscript-keyword">let</span> ((ignore ff-ignore-include))
+    (setq ff-ignore-include ignore-include)
+    (ff-find-the-other-file in-other-window)
+    (setq ff-ignore-include ignore)))
+
+<span class="enscript-comment">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+</span><span class="enscript-comment">;; Support functions
+</span>
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-find-the-other-file</span> (&amp;optional in-other-window)
+  <span class="enscript-string">"Find the header or source file corresponding to the current file.
+Being on a `#include' line pulls in that file, but see the help on
+the `ff-ignore-include' variable.
+
+If optional IN-OTHER-WINDOW is non-nil, find the file in another window."</span>
+
+  (<span class="enscript-keyword">let</span> (match           <span class="enscript-comment">;; matching regexp for this file
+</span>        suffixes        <span class="enscript-comment">;; set of replacing regexps for the matching regexp
+</span>        action          <span class="enscript-comment">;; function to generate the names of the other files
+</span>        fname           <span class="enscript-comment">;; basename of this file
+</span>        pos             <span class="enscript-comment">;; where we start matching filenames
+</span>        stub            <span class="enscript-comment">;; name of the file without extension
+</span>        alist           <span class="enscript-comment">;; working copy of the list of file extensions
+</span>        pathname        <span class="enscript-comment">;; the pathname of the file or the #include line
+</span>        default-name    <span class="enscript-comment">;; file we should create if none found
+</span>        format          <span class="enscript-comment">;; what we have to match
+</span>        found           <span class="enscript-comment">;; name of the file or buffer found - nil if none
+</span>        dirs            <span class="enscript-comment">;; local value of ff-search-directories
+</span>        no-match)       <span class="enscript-comment">;; whether we know about this kind of file
+</span>
+    (<span class="enscript-keyword">if</span> ff-pre-find-hooks
+        (run-hooks 'ff-pre-find-hooks))
+
+    (message <span class="enscript-string">"Working..."</span>)
+
+    (setq dirs
+          (<span class="enscript-keyword">if</span> (symbolp ff-search-directories)
+              (ff-list-replace-env-vars (symbol-value ff-search-directories))
+            (ff-list-replace-env-vars ff-search-directories)))
+
+    (<span class="enscript-keyword">save-excursion</span>
+      (beginning-of-line 1)
+      (setq fname (ff-treat-as-special)))
+
+    (<span class="enscript-keyword">cond</span>
+     ((<span class="enscript-keyword">and</span> (not ff-ignore-include) fname)
+      (setq default-name fname)
+      (setq found (ff-get-file dirs fname nil in-other-window)))
+
+     <span class="enscript-comment">;; let's just get the corresponding file
+</span>     (t
+      (setq alist (<span class="enscript-keyword">if</span> (symbolp ff-other-file-alist)
+                      (symbol-value ff-other-file-alist)
+                    ff-other-file-alist)
+            pathname (<span class="enscript-keyword">if</span> (buffer-file-name)
+                         (buffer-file-name)
+                       <span class="enscript-string">"/none.none"</span>))
+
+      (setq fname (file-name-nondirectory pathname)
+            no-match nil
+            match (car alist))
+
+      <span class="enscript-comment">;; find the table entry corresponding to this file
+</span>      (setq pos (ff-string-match (car match) fname))
+      (<span class="enscript-keyword">while</span> (<span class="enscript-keyword">and</span> match (<span class="enscript-keyword">if</span> (<span class="enscript-keyword">and</span> pos (&gt;= pos 0)) nil (not pos)))
+        (setq alist (cdr alist))
+        (setq match (car alist))
+        (setq pos (ff-string-match (car match) fname)))
+
+      <span class="enscript-comment">;; no point going on if we haven't found anything
+</span>      (<span class="enscript-keyword">if</span> (not match)
+          (setq no-match t)
+
+        <span class="enscript-comment">;; otherwise, suffixes contains what we need
+</span>        (setq suffixes (car (cdr match))
+              action (car (cdr match))
+              found nil)
+
+        <span class="enscript-comment">;; if we have a function to generate new names,
+</span>        <span class="enscript-comment">;; invoke it with the name of the current file
+</span>        (<span class="enscript-keyword">if</span> (<span class="enscript-keyword">and</span> (atom action) (fboundp action))
+            (<span class="enscript-keyword">progn</span>
+              (setq suffixes (funcall action (buffer-file-name))
+                    match (cons (car match) (list suffixes))
+                    stub nil
+                    default-name (car suffixes)))
+
+          <span class="enscript-comment">;; otherwise build our filename stub
+</span>          (<span class="enscript-keyword">cond</span>
+
+           <span class="enscript-comment">;; get around the problem that 0 and nil both mean false!
+</span>           ((= pos 0)
+            (setq format <span class="enscript-string">""</span>)
+            (setq stub <span class="enscript-string">""</span>)
+            )
+
+           (t
+            (setq format (concat <span class="enscript-string">"\\(.+\\)"</span> (car match)))
+            (string-match format fname)
+            (setq stub (substring fname (match-beginning 1) (match-end 1)))
+            ))
+
+          <span class="enscript-comment">;; if we find nothing, we should try to get a file like this one
+</span>          (setq default-name
+                (concat stub (car (car (cdr match))))))
+
+        <span class="enscript-comment">;; do the real work - find the file
+</span>        (setq found
+              (ff-get-file dirs
+                           stub
+                           suffixes
+                           in-other-window)))))
+
+    (<span class="enscript-keyword">cond</span>
+     (no-match                     <span class="enscript-comment">;; could not even determine the other file
+</span>      (message <span class="enscript-string">""</span>))
+
+     (t
+      (<span class="enscript-keyword">cond</span>
+
+       ((not found)                <span class="enscript-comment">;; could not find the other file
+</span>
+        (<span class="enscript-keyword">if</span> ff-not-found-hooks     <span class="enscript-comment">;; run the hooks
+</span>            (run-hooks 'ff-not-found-hooks))
+
+        (<span class="enscript-keyword">cond</span>
+         (ff-always-try-to-create  <span class="enscript-comment">;; try to create the file
+</span>          (<span class="enscript-keyword">let</span> (name pathname)
+
+            (setq name
+                  (expand-file-name
+                   (read-file-name
+                    (format <span class="enscript-string">"Find or create %s in: "</span> default-name)
+                    default-directory default-name nil)))
+            
+            (setq pathname
+                  (<span class="enscript-keyword">if</span> (file-directory-p name)
+                      (concat (file-name-as-directory name) default-name)
+                    (setq found name)))
+            
+            (ff-find-file pathname in-other-window t)))
+
+         (t                        <span class="enscript-comment">;; don't create the file, just whinge
+</span>          (message <span class="enscript-string">"No file found for %s"</span> fname))))
+
+       (t                          <span class="enscript-comment">;; matching file found
+</span>        nil))))
+
+    found))                        <span class="enscript-comment">;; return buffer-name or filename
+</span>
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-get-file</span> (search-dirs filename &amp;optional suffix-list other-window)
+  <span class="enscript-string">"Find a file in the SEARCH-DIRS with the given FILENAME (or filename stub).
+If (optional) SUFFIX-LIST is nil, search for fname, otherwise search
+for fname with each of the given suffixes.  Get the file or the buffer
+corresponding to the name of the first file found, or nil."</span>
+  (<span class="enscript-keyword">let</span> ((filename (ff-get-file-name search-dirs filename suffix-list)))
+            
+    (<span class="enscript-keyword">cond</span>
+     ((not filename)
+      nil)
+
+     ((bufferp (get-file-buffer filename))
+      (ff-switch-to-buffer (get-file-buffer filename) other-window)
+      filename)
+               
+     ((file-exists-p filename)
+      (ff-find-file filename other-window nil)
+      filename)
+
+     (t
+      nil))))
+
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-get-file-name</span> (search-dirs fname-stub &amp;optional suffix-list)
+  <span class="enscript-string">"Find a file in SEARCH-DIRS with the given name (or stub) FNAME-STUB.
+If (optional) SUFFIX-LIST is nil, search for FNAME-STUB, otherwise
+search for FNAME-STUB with each of the given suffixes.  Return the
+name of the first file found."</span>
+  (<span class="enscript-keyword">let</span>* (dirs         <span class="enscript-comment">;; working copy of dirs to search
+</span>         dir          <span class="enscript-comment">;; the current dir considered
+</span>         file         <span class="enscript-comment">;; filename being looked for
+</span>         rest         <span class="enscript-comment">;; pathname after first /*
+</span>         this-suffix  <span class="enscript-comment">;; the suffix we are currently considering
+</span>         suffixes     <span class="enscript-comment">;; working copy of suffix-list
+</span>         filename     <span class="enscript-comment">;; built filename
+</span>         blist        <span class="enscript-comment">;; list of live buffers
+</span>         buf          <span class="enscript-comment">;; current buffer in blist
+</span>         found)       <span class="enscript-comment">;; whether we have found anything
+</span>
+    (setq suffixes suffix-list)
+
+    <span class="enscript-comment">;; suffixes is nil =&gt; fname-stub is the file we are looking for
+</span>    <span class="enscript-comment">;; otherwise fname-stub is a stub, and we append a suffix
+</span>    (<span class="enscript-keyword">if</span> suffixes
+        (setq this-suffix (car suffixes))
+      (setq this-suffix <span class="enscript-string">""</span>)
+      (setq suffixes (list <span class="enscript-string">""</span>)))
+            
+    <span class="enscript-comment">;; find whether the file is in a buffer first
+</span>    (<span class="enscript-keyword">while</span> (<span class="enscript-keyword">and</span> suffixes (not found))
+      (setq filename (concat fname-stub this-suffix))
+
+      (<span class="enscript-keyword">if</span> (not ff-quiet-mode)
+          (message <span class="enscript-string">"Finding buffer %s..."</span> filename))
+
+      (<span class="enscript-keyword">if</span> (bufferp (get-file-buffer filename))
+          (setq found (buffer-file-name (get-file-buffer filename))))
+
+      (setq blist (buffer-list))
+      (setq buf (buffer-name (car blist)))
+      (<span class="enscript-keyword">while</span> (<span class="enscript-keyword">and</span> blist (not found))
+
+        (<span class="enscript-keyword">if</span> (string-match (concat filename <span class="enscript-string">"&lt;[0-9]+&gt;"</span>) buf)
+            (setq found (buffer-file-name (car blist))))
+
+        (setq blist (cdr blist))
+        (setq buf (buffer-name (car blist))))
+
+      (setq suffixes (cdr suffixes))
+      (setq this-suffix (car suffixes)))
+
+    <span class="enscript-comment">;; now look for the real file
+</span>    (setq dirs search-dirs)
+    (setq dir  (car dirs))
+    (<span class="enscript-keyword">while</span> (<span class="enscript-keyword">and</span> (not found) dirs)
+
+      (setq suffixes suffix-list)
+
+      <span class="enscript-comment">;; if dir does not contain '/*', look for the file
+</span>      (<span class="enscript-keyword">if</span> (<span class="enscript-keyword">and</span> dir (not (string-match <span class="enscript-string">"\\([^*]*\\)/\\\*\\(/.*\\)*"</span> dir)))
+          (<span class="enscript-keyword">progn</span>
+            
+            <span class="enscript-comment">;; suffixes is nil =&gt; fname-stub is the file we are looking for
+</span>            <span class="enscript-comment">;; otherwise fname-stub is a stub, and we append a suffix
+</span>            (<span class="enscript-keyword">if</span> suffixes
+                (setq this-suffix (car suffixes))
+              (setq this-suffix <span class="enscript-string">""</span>)
+              (setq suffixes (list <span class="enscript-string">""</span>)))
+            
+            (<span class="enscript-keyword">while</span> (<span class="enscript-keyword">and</span> suffixes (not found))
+
+              (setq filename (concat fname-stub this-suffix))
+              (setq file (concat dir <span class="enscript-string">"/"</span> filename))
+              
+              (<span class="enscript-keyword">if</span> (not ff-quiet-mode)
+                  (message <span class="enscript-string">"Finding %s..."</span> file))
+
+              (<span class="enscript-keyword">if</span> (file-exists-p file)
+                  (setq found file))
+              
+              (setq suffixes (cdr suffixes))
+              (setq this-suffix (car suffixes))))
+
+        <span class="enscript-comment">;; otherwise dir matches the '/*', so search each dir separately
+</span>        (<span class="enscript-keyword">progn</span>
+          (<span class="enscript-keyword">if</span> (match-beginning 2)
+              (setq rest (substring dir (match-beginning 2) (match-end 2)))
+            (setq rest <span class="enscript-string">""</span>)
+            )
+          (setq dir  (substring dir (match-beginning 1) (match-end 1)))
+
+          (<span class="enscript-keyword">let</span> ((dirlist (ff-all-dirs-under dir '(<span class="enscript-string">".."</span>)))
+                this-dir compl-dirs)
+
+            (setq this-dir (car dirlist))
+            (<span class="enscript-keyword">while</span> dirlist
+              (setq compl-dirs
+                    (append
+                     compl-dirs
+                     (list (concat this-dir rest))
+                     ))
+              (setq dirlist  (cdr dirlist))
+              (setq this-dir (car dirlist)))
+
+            (<span class="enscript-keyword">if</span> compl-dirs
+                (setq found (ff-get-file-name compl-dirs
+                                              fname-stub
+                                              suffix-list))))))
+      (setq dirs (cdr dirs))
+      (setq dir (car dirs)))
+
+    (<span class="enscript-keyword">if</span> found
+        (message <span class="enscript-string">"%s found"</span> found))
+
+    found))
+
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-string-match</span> (regexp string &amp;optional start)
+  <span class="enscript-string">"Like `string-match', but set `case-fold-search' temporarily.
+The value used comes from `ff-case-fold-search'."</span>
+  (<span class="enscript-keyword">let</span> ((case-fold-search ff-case-fold-search))
+    (<span class="enscript-keyword">if</span> regexp
+	(string-match regexp string start))))
+
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-list-replace-env-vars</span> (search-list)
+  <span class="enscript-string">"Replace environment variables (of the form $VARIABLE) in SEARCH-LIST."</span>
+  (<span class="enscript-keyword">let</span> (list
+        (var (car search-list)))
+    (<span class="enscript-keyword">while</span> search-list
+      (<span class="enscript-keyword">if</span> (string-match <span class="enscript-string">"\\(.*\\)\\$[({]*\\([a-zA-Z0-9_]+\\)[)}]*\\(.*\\)"</span> var)
+          (setq var
+                (concat
+                 (substring var (match-beginning 1) (match-end 1))
+                 (getenv (substring var (match-beginning 2) (match-end 2)))
+                 (substring var (match-beginning 3) (match-end 3)))))
+      (setq search-list (cdr search-list))
+      (setq list (cons var list))
+      (setq var (car search-list)))
+    (setq search-list (reverse list))))
+
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-treat-as-special</span> ()
+  <span class="enscript-string">"Return the file to look for if the construct was special, else nil.
+The construct is defined in the variable `ff-special-constructs'."</span>
+  (<span class="enscript-keyword">let</span>* (fname
+         (list ff-special-constructs)
+         (elem (car list))
+         (regexp (car elem))
+         (match (cdr elem)))
+    (<span class="enscript-keyword">while</span> (<span class="enscript-keyword">and</span> list (not fname))
+      (<span class="enscript-keyword">if</span> (<span class="enscript-keyword">and</span> (looking-at regexp) match)
+          (setq fname (funcall match)))
+      (setq list (cdr list))
+      (setq elem (car list))
+      (setq regexp (car elem))
+      (setq match (cdr elem)))
+    fname))
+
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-basename</span> (string)
+  <span class="enscript-string">"Return the basename of pathname STRING."</span>
+  (setq string (concat <span class="enscript-string">"/"</span> string))
+  (string-match <span class="enscript-string">".*/\\([^/]+\\)$"</span> string)
+  (setq string (substring string (match-beginning 1) (match-end 1))))
+
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-all-dirs-under</span> (here &amp;optional exclude)
+  <span class="enscript-string">"Get all the directory files under directory HERE.
+Exclude all files in the optional EXCLUDE list."</span>
+  (<span class="enscript-keyword">if</span> (file-directory-p here)
+      (<span class="enscript-keyword">condition-case</span> nil
+          (<span class="enscript-keyword">progn</span>
+            (<span class="enscript-keyword">let</span> ((files (directory-files here t))
+                  (dirlist (list))
+                  file)
+              (<span class="enscript-keyword">while</span> files
+                (setq file (car files))
+                (<span class="enscript-keyword">if</span> (<span class="enscript-keyword">and</span>
+                     (file-directory-p file)
+                     (not (member (ff-basename file) exclude)))
+                    (setq dirlist (cons file dirlist)))
+                (setq files (cdr files)))
+              (setq dirlist (reverse dirlist))))
+        (error nil))
+    nil))
+
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-switch-file</span> (f1 f2 file &amp;optional in-other-window new-file)
+  <span class="enscript-string">"Call F1 or F2 on FILE, according to IN-OTHER-WINDOW.
+In addition, this runs various hooks.
+
+Either F1 or F2 receives FILE as the sole argument.
+The decision of which one to call is based on IN-OTHER-WINDOW
+and on the global variable `ff-always-in-other-window'.
+
+F1 and F2 are typically `find-file' / `find-file-other-window'
+or `switch-to-buffer' / `switch-to-buffer-other-window' function pairs.
+
+If optional NEW-FILE is t, then a special hook (`ff-file-created-hooks') is
+called before `ff-post-load-hooks'."</span>
+  (<span class="enscript-keyword">if</span> ff-pre-load-hooks
+      (run-hooks 'ff-pre-load-hooks))
+  (<span class="enscript-keyword">if</span> (<span class="enscript-keyword">or</span>
+       (<span class="enscript-keyword">and</span> in-other-window (not ff-always-in-other-window))
+       (<span class="enscript-keyword">and</span> (not in-other-window) ff-always-in-other-window))
+      (funcall f2 file)
+    (funcall f1 file))
+  (<span class="enscript-keyword">if</span> new-file
+      (<span class="enscript-keyword">if</span> ff-file-created-hooks
+          (run-hooks 'ff-file-created-hooks)))
+  (<span class="enscript-keyword">if</span> ff-post-load-hooks
+      (run-hooks 'ff-post-load-hooks)))
+
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-find-file</span> (file &amp;optional in-other-window new-file)
+  <span class="enscript-string">"Like `find-file', but may show the file in another window."</span>
+  (ff-switch-file 'find-file
+                  'find-file-other-window
+                  file in-other-window new-file))
+
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-switch-to-buffer</span> (buffer-<span class="enscript-keyword">or</span>-name &amp;optional in-other-window)
+  <span class="enscript-string">"Like `switch-to-buffer', but may show the buffer in another window."</span>
+
+  (ff-switch-file 'switch-to-buffer
+                  'switch-to-buffer-other-window
+                  buffer-<span class="enscript-keyword">or</span>-name in-other-window nil))
+
+<span class="enscript-comment">;;;###autoload
+</span>(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-mouse-find-other-file</span> (event)
+  <span class="enscript-string">"Visit the file you click on."</span>
+  (interactive <span class="enscript-string">"e"</span>)
+  (<span class="enscript-keyword">save-excursion</span>
+    (mouse-set-point event)
+    (ff-find-other-file nil)))
+
+<span class="enscript-comment">;;;###autoload
+</span>(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-mouse-find-other-file-other-window</span> (event)
+  <span class="enscript-string">"Visit the file you click on in another window."</span>
+  (interactive <span class="enscript-string">"e"</span>)
+  (<span class="enscript-keyword">save-excursion</span>
+    (mouse-set-point event)
+    (ff-find-other-file t)))
+
+<span class="enscript-comment">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+</span><span class="enscript-comment">;; This section offers an example of user defined function to select files
+</span>
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-upcase-p</span> (string &amp;optional start end)
+  <span class="enscript-string">"Return t if STRING is all uppercase.
+Given START and/or END, checks between these characters."</span>
+  (<span class="enscript-keyword">let</span> (match str)
+    (<span class="enscript-keyword">if</span> (not start)
+        (setq start 0))
+    (<span class="enscript-keyword">if</span> (not end)
+        (setq end (length string)))
+    (<span class="enscript-keyword">if</span> (= start end)
+        (setq end (1+ end)))
+    (setq str (substring string start end))
+    (<span class="enscript-keyword">if</span> (<span class="enscript-keyword">and</span>
+         (ff-string-match <span class="enscript-string">"[A-Z]+"</span> str)
+         (setq match (match-data))
+         (= (car match) 0)
+         (= (car (cdr match)) (length str)))
+        t
+      nil)))
+
+(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-cc-hh-converter</span> (arg)
+  <span class="enscript-string">"Discriminate file extensions.
+Build up a new file list based possibly on part of the directory name
+and the name of the file passed in."</span>
+  (ff-string-match <span class="enscript-string">"\\(.*\\)/\\([^/]+\\)/\\([^.]+\\).\\([^/]+\\)$"</span> arg)
+  (<span class="enscript-keyword">let</span> ((path (<span class="enscript-keyword">if</span> (match-beginning 1)
+                  (substring arg (match-beginning 1) (match-end 1)) nil))
+        (dire (<span class="enscript-keyword">if</span> (match-beginning 2)
+                  (substring arg (match-beginning 2) (match-end 2)) nil))
+        (file (<span class="enscript-keyword">if</span> (match-beginning 3)
+                  (substring arg (match-beginning 3) (match-end 3)) nil))
+        (extn (<span class="enscript-keyword">if</span> (match-beginning 4)
+                  (substring arg (match-beginning 4) (match-end 4)) nil))
+        <span class="enscript-keyword">return</span>-list)
+    (<span class="enscript-keyword">cond</span>
+     <span class="enscript-comment">;; fooZapJunk.cc =&gt; ZapJunk.{hh,h} or fooZapJunk.{hh,h}
+</span>     ((<span class="enscript-keyword">and</span> (string= extn <span class="enscript-string">"cc"</span>)
+           (ff-string-match <span class="enscript-string">"^\\([a-z]+\\)\\([A-Z].+\\)$"</span> file))
+      (<span class="enscript-keyword">let</span> ((stub  (substring file (match-beginning 2) (match-end 2))))
+        (setq dire (upcase (substring file (match-beginning 1) (match-end 1))))
+        (setq <span class="enscript-keyword">return</span>-list (list (concat stub <span class="enscript-string">".hh"</span>)
+                                (concat stub <span class="enscript-string">".h"</span>)
+                                (concat file <span class="enscript-string">".hh"</span>)
+                                (concat file <span class="enscript-string">".h"</span>)))
+        ))
+     <span class="enscript-comment">;; FOO/ZapJunk.hh =&gt; fooZapJunk.{cc,C} or ZapJunk.{cc,C}
+</span>     ((<span class="enscript-keyword">and</span> (string= extn <span class="enscript-string">"hh"</span>) (ff-upcase-p dire) file)
+      (<span class="enscript-keyword">let</span> ((stub (concat (downcase dire) file)))
+        (setq <span class="enscript-keyword">return</span>-list (list (concat stub <span class="enscript-string">".cc"</span>)
+                                (concat stub <span class="enscript-string">".C"</span>)
+                                (concat file <span class="enscript-string">".cc"</span>)
+                                (concat file <span class="enscript-string">".C"</span>)))
+        ))
+     <span class="enscript-comment">;; zap.cc =&gt; zap.hh or zap.h
+</span>     ((string= extn <span class="enscript-string">"cc"</span>)
+      (<span class="enscript-keyword">let</span> ((stub file))
+        (setq <span class="enscript-keyword">return</span>-list (list (concat stub <span class="enscript-string">".hh"</span>)
+                                (concat stub <span class="enscript-string">".h"</span>)))
+        ))
+     <span class="enscript-comment">;; zap.hh =&gt; zap.cc or zap.C
+</span>     ((string= extn <span class="enscript-string">"hh"</span>)
+      (<span class="enscript-keyword">let</span> ((stub file))
+        (setq <span class="enscript-keyword">return</span>-list (list (concat stub <span class="enscript-string">".cc"</span>)
+                                (concat stub <span class="enscript-string">".C"</span>)))
+        ))
+     (t
+      nil))
+    
+    <span class="enscript-keyword">return</span>-list))
+
+<span class="enscript-comment">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+</span><span class="enscript-comment">;; This section offers an example of user defined function to place point.
+</span><span class="enscript-comment">;; The regexps are Ada specific.
+</span>
+(defvar ff-function-name nil <span class="enscript-string">"Name of the function we are in."</span>)
+
+(<span class="enscript-keyword">eval-when-compile</span> (require 'ada-mode))
+
+<span class="enscript-comment">;; bind with (setq ff-pre-load-hooks 'ff-which-function-are-we-in)
+</span><span class="enscript-comment">;;
+</span>(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-which-function-are-we-in</span> ()
+  <span class="enscript-string">"Return the name of the function whose definition/declaration point is in.
+Also remember that name in `ff-function-name'."</span>
+
+  (setq ff-function-name nil)
+
+  (<span class="enscript-keyword">save-excursion</span>
+    (<span class="enscript-keyword">if</span> (re-search-backward ada-procedure-start-regexp nil t)
+        (setq ff-function-name (buffer-substring (match-beginning 0)
+                                                 (match-end 0)))
+      <span class="enscript-comment">; we didn't find a procedure start, perhaps there is a package
+</span>      (<span class="enscript-keyword">if</span> (re-search-backward ada-package-start-regexp nil t)
+          (setq ff-function-name (buffer-substring (match-beginning 0)
+                                                   (match-end 0)))
+        ))))
+
+<span class="enscript-comment">;; bind with (setq ff-post-load-hooks 'ff-set-point-accordingly)
+</span><span class="enscript-comment">;;
+</span>(<span class="enscript-keyword">defun</span> <span class="enscript-function-name">ff-set-point-accordingly</span> ()
+  <span class="enscript-string">"Find the function specified in `ff-function-name'.
+That name was previously determined by `ff-which-function-are-we-in'."</span>
+  (<span class="enscript-keyword">if</span> ff-function-name
+      (<span class="enscript-keyword">progn</span>
+        (goto-char (point-min))
+        (search-forward ff-function-name nil t))))
+
+(provide 'find-file)
+
+<span class="enscript-comment">;;; find-file.el ends here
+</span></pre>
+<hr>
+</body></html>

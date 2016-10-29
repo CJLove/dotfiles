@@ -1,0 +1,1 @@
+/home/love/Development/go-mode.el/go-mode.el
