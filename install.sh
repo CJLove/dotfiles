@@ -6,7 +6,7 @@ files=".bash_profile .bashrc .gitconfig .xemacs elisp"
 
 for file in $files
 do
-	[ -f $file ] && mv $file $file.bak
+	[ -f $file -o -d $file ] && mv $file $file.bak
 
 	rm -f $file
 
