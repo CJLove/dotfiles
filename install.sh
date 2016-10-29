@@ -2,7 +2,7 @@
 
 pushd $HOME > /dev/null 2>&1
 
-files=".bash_profile .bashrc .xemacs elisp"
+files=".bash_profile .bashrc .gitconfig .xemacs elisp"
 
 for file in $files
 do
@@ -10,7 +10,10 @@ do
 
 	rm -f $file
 
-	ln $HOME/dotfiles/$file .
+	ln -s $HOME/dotfiles/$file .
 done
+
+. $HOME/.bash_profile
+
 
 	

@@ -44,8 +44,8 @@ esac
 #
 # Handle host-specific additions
 #
-if [ -d $HOME/.bash_local.d ]; then
-	for file in $HOME/.bash_local.d/*.sh
+if [ -d $HOME/.bash_profile.d ]; then
+	for file in $HOME/.bash_profile.d/*.sh
 	do
 		. $file
 	done
