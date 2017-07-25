@@ -51,15 +51,15 @@
 ;;;
 ;;; Autoload other major modes
 ;;;
-(require 'vc)
+;(require 'vc)
 (require 'font-lock)
-(require 'mercurial)
+;(require 'mercurial)
 (require 'cmake-mode)
 (require 'yaml-mode)
 (require 'protobuf-mode)
 
-(add-to-list 'vc-handled-backends 'SVN)
-(add-to-list 'vc-handled-backends 'GIT)
+;(add-to-list 'vc-handled-backends 'SVN)
+;(add-to-list 'vc-handled-backends 'GIT)
 ;;;
 ;;; C mode common hook
 ;;;
@@ -71,7 +71,7 @@
 )
 
 
-(require 'go-mode-autoloads)
+;(require 'go-mode-autoloads)
 
 ;;;
 ;;; auto-mode-alist extentions:
@@ -93,7 +93,7 @@
         (append '(("CMakeLists\\.txt\\'" . cmake-mode)
                   ("\\.cmake\\'" . cmake-mode))
                 auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.go\\'" . go-mode) auto-mode-alist))
+;(setq auto-mode-alist (cons '("\\.go\\'" . go-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.template\\'" . yaml-mode) auto-mode-alist))
 ;;;
 ;;; no region highlighting like zmacs
