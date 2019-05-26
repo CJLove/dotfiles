@@ -59,9 +59,17 @@ if [ -f ~/.bashrc ]; then
 fi
 
 
+
 #
 # Prompts
 # 
 export PS1="\h \w > "
+if [ -f ~/.git-completion.sh ]; then
+	source ~/.git-completion.sh
+fi
+if [ -f ~/.git-prompt.sh ]; then
+	source ~/.git-prompt.sh
+	export PS1="\h \w $(__git_ps1 " (%s)") > "
+fi
 export PS2="2> "
 export PS3="3> "

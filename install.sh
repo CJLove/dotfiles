@@ -2,7 +2,7 @@
 
 pushd $HOME > /dev/null 2>&1
 
-files=".bash_profile .bashrc .gitconfig .xemacs elisp"
+files=".bash_profile .bashrc .gitconfig .git-completion.sh .git-prompt.sh .xemacs elisp"
 
 for file in $files
 do
