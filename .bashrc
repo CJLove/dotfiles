@@ -59,4 +59,6 @@ alias gcc910='setupGcc910'
 alias gcc740='setupGcc740'
 alias gcc650='setupGcc650'
 
-
+alias dotfiles='cd ~/dotfiles'
+alias serfcpp='cd ~/Development/serf-cpp'
+alias configcpp='cd ~/Development/config-cpp'
