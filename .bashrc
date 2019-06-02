@@ -55,9 +55,26 @@ function setupGcc650 {
 	export PS1="gcc650 \h \w > "
 }
 
+
+function setupGcc530 {
+	echo "Setting up for gcc 5.3.0..."
+	export PATH=/usr/local/gcc53/bin:$PATH
+	export LD_LIBRARY_PATH=/usr/local/gcc53/lib64:$LD_LIBRARY_PATH
+	export PS1="gcc530 \h \w > "
+}
+
+function setupGcc493 {
+	echo "Setting up for gcc 4.9.3..."
+	export PATH=/usr/local/gcc493/bin:$PATH
+	export LD_LIBRARY_PATH=/usr/local/gcc493/lib64:$LD_LIBRARY_PATH
+	export PS1="gcc490 \h \w > "
+}
+
 alias gcc910='setupGcc910'
 alias gcc740='setupGcc740'
 alias gcc650='setupGcc650'
+alias gcc530='setupGcc530'
+alias gcc493='setupGcc493'
 
 alias dotfiles='cd ~/dotfiles'
 alias serfcpp='cd ~/Development/serf-cpp'
