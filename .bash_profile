@@ -10,7 +10,7 @@ export SSH_X="-Y"
 #
 # GIT setup
 #
-export GIT_EDITOR=gnuclient
+#export GIT_EDITOR=gnuclient
 
 #
 # Identify the OS, architecture, and hostname
@@ -69,7 +69,9 @@ if [ -f ~/.git-completion.sh ]; then
 fi
 if [ -f ~/.git-prompt.sh ]; then
 	source ~/.git-prompt.sh
-	export PS1="\h \w $(__git_ps1 " (%s)") > "
+	export PS1='\h \w $(__git_ps1 " (%s)") > '
 fi
 export PS2="2> "
 export PS3="3> "
+
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
