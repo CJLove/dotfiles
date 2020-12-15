@@ -13,9 +13,10 @@ export SSH_X="-Y"
 #export GIT_EDITOR=gnuclient
 
 #
-# Identify the OS, architecture, and hostname
+# Identify the OS, architecture, kernel and hostname
 os=$(uname -s)
 arch=$(uname -p)
+kern=$(uname -r)
 host=$(hostname)
 
 export PATH=$HOME/bin:$PATH
@@ -62,8 +63,16 @@ fi
 
 #
 # Prompts
-# 
-export PS1="\h \w > "
+#
+if [[ "$kern" == *"microsoft"* ]]; then
+	# WSL2...
+	os=$(grep "^ID=" /etc/os-release|cut -f2 -d'=')
+	ver=$(grep "^VERSION_ID=" /etc/os-release|cut -f2 -d'=')
+
+	export PS1="$os $ver \w > "	
+else
+	export PS1="\h \w > "
+fi
 if [ -f ~/.git-completion.sh ]; then
 	source ~/.git-completion.sh
 fi
