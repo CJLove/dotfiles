@@ -7,7 +7,7 @@ if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-source $HOME/.cargo/env
+[ -d $HOME/.cargo ] && source $HOME/.cargo/env
 
 #
 # General aliases
