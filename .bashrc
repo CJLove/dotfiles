@@ -33,9 +33,9 @@ alias fir='ssh $SSH_X fir'
 alias chasm='ssh $SSH_X chasm'
 alias spruce='ssh $SSH_X spruce.local'
 alias ash='ssh $SSH_X ash.local'
-alias pine='ssh $SSH_X pine.local'
-alias node1='ssh $SSH_X node1.local'
-alias node2='ssh $SSH_X node2.local'
+alias pine='ssh $SSH_X ubuntu@pine.local'
+alias birch='ssh $SSH_X ubuntu@birch.local'
+alias larch='ssh $SSH_X ubuntu@larch.local'
 
 alias pithos='flatpak run io.github.Pithos'
 
