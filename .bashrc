@@ -30,8 +30,6 @@ alias java64='$HOME/Java/jdk1.7.0.51_x86/bin/java'
 # Virtual machines (depend on entries in /etc/hosts)
 #
 alias fir='ssh $SSH_X fir'
-alias chasm='ssh $SSH_X chasm'
-alias spruce='ssh $SSH_X spruce.local'
 alias ash='ssh $SSH_X ash.local'
 alias pine='ssh $SSH_X ubuntu@pine.local'
 alias birch='ssh $SSH_X ubuntu@birch.local'
