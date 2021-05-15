@@ -32,6 +32,8 @@ Linux)
 
 	;;
 CYGWIN*)
+	export PATH=/opt/cc65/bin:/usr/local/bin:$PATH
+	alias x16emu='/mnt/d/x16/x16emu_win-r37/x16emu.exe -rom "D:\x16\x16emu_win-r37\rom.bin"'
 	;;
 FreeBSD)
 	export SSH_X="-X"
@@ -75,6 +77,10 @@ if [[ "$kern" == *"microsoft"* ]]; then
 	ver=$(grep "^VERSION_ID=" /etc/os-release|cut -f2 -d'=')
 
 	wslhost="$os $ver"
+fi
+if [[ "$os" == "CYGWIN"* ]]; then
+	# Cygwin
+	wslhost="cygwin"
 fi
 export PS1='\h \w > '
 if [ -f ~/.git-completion.sh ]; then
