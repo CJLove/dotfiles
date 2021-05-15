@@ -31,9 +31,8 @@ alias java64='$HOME/Java/jdk1.7.0.51_x86/bin/java'
 #
 alias fir='ssh $SSH_X fir'
 alias ash='ssh $SSH_X ash.local'
-alias pine='ssh $SSH_X ubuntu@pine.local'
-alias birch='ssh $SSH_X ubuntu@birch.local'
-alias larch='ssh $SSH_X ubuntu@larch.local'
+alias pine='ssh $SSH_X pine.local'
+alias birch='ssh $SSH_X birch.local'
 
 alias pithos='flatpak run io.github.Pithos'
 
@@ -103,6 +102,7 @@ alias configcpp='cd ~/Development/config-cpp'
 
 alias x16emur37='~/Software/X16.r37/x16emu -rom ~/Software/X16.r37/rom.bin'
 alias x16emur38='~/Software/X16.r38/x16emu -rom ~/Software/X16.r38/rom.bin'
+alias x16emur39='~/Software/X16.r39/x16emu -rom ~/Software/X16.r39/rom.bin'
 
 alias opengrok='sudo su - opengrok' 
 alias nginx='sudo su - nginx'

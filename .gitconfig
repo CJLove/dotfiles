@@ -25,3 +25,5 @@
   branch = magenta
 [push]
 	default = matching
+[pull]
+	rebase = false
