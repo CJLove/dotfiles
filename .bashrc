@@ -113,3 +113,5 @@ alias lr='cd $HOME/Development/x16-LodeRunner'
 alias cr='cd $HOME/Development/x16-ChopperRaid'
 alias lx16='cd $HOME/Development/libX16'
 alias lx16test='cd $HOME/Development/libX16Test'
+
+alias s390x='podman run --rm -it -v /home/s390xlove:/root/ -p 5001:5000 fir.local:3005/s390x/ubuntu-s390x /bin/bash -l'
