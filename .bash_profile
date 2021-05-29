@@ -82,6 +82,10 @@ if [[ "$os" == "CYGWIN"* ]]; then
 	# Cygwin
 	wslhost="cygwin"
 fi
+if [[ "$arch" == "s390x" ]]; then
+	# s390x container
+	wslhost="ubuntu-s390x"
+fi
 export PS1='\h \w > '
 if [ -f ~/.git-completion.sh ]; then
 	source ~/.git-completion.sh
