@@ -27,3 +27,5 @@
 	default = matching
 [pull]
 	rebase = false
+[core]
+	editor = vim
