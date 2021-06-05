@@ -10,7 +10,9 @@ do
 
 	rm -f $file
 
-	ln -s $HOME/dotfiles/$file .
+	#ln -s $HOME/dotfiles/$file .
+	ln -s dotfiles/$file .
+	
 done
 
 . $HOME/.bash_profile
