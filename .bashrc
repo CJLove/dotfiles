@@ -33,6 +33,7 @@ alias fir='ssh $SSH_X fir'
 alias ash='ssh $SSH_X ash.local'
 alias pine='ssh $SSH_X pine.local'
 alias birch='ssh $SSH_X birch.local'
+alias aspen='ssh $SSH_X aspen.local'
 
 alias pithos='flatpak run io.github.Pithos'
 
