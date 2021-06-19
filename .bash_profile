@@ -24,7 +24,7 @@ export PATH=$HOME/bin:$PATH
 
 case $os in
 Linux)
-	export PATH=/opt/cc65/bin:/usr/local/bin:$PATH
+	export PATH=/opt/cc65/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 
 	export MANPATH=/usr/local/man:$MANPATH
 
