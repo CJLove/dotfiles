@@ -35,9 +35,23 @@ alias pine='ssh $SSH_X pine.local'
 alias birch='ssh $SSH_X birch.local'
 alias aspen='ssh $SSH_X aspen.local'
 alias larch='ssh $SSH_X larch.local'
+alias ginkgo='ssh $SSH_X ginkgo.local'
 
 alias pithos='flatpak run io.github.Pithos'
 
+function setupGcc1030 {
+	echo "Setting up for gcc 10.3.0..."
+	export PATH=/opt/gcc1030/bin:$PATH
+	export LD_LIBRARY_PATH=/opt/gcc1030/lib64:$LD_LIBRARY_PATH
+	export PS1="gcc1030 \h \w > "
+}
+
+function setupGcc940 {
+	echo "Setting up for gcc 9.4.0..."
+	export PATH=/opt/gcc940/bin:$PATH
+	export LD_LIBRARY_PATH=/opt/gcc940/lib64:$LD_LIBRARY_PATH
+	export PS1="gcc940 \h \w > "
+}
 
 function setupGcc910 {
 	echo "Setting up for gcc 9.1.0..."
@@ -90,6 +104,8 @@ function setupCC65 {
 	export PS1="cc65 dev \h \w > "
 }
 
+alias gcc1030='setupGcc1030'
+alias gcc940='setupGcc940'
 alias gcc910='setupGcc910'
 alias gcc840='setupGcc840'
 alias gcc740='setupGcc740'
