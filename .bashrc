@@ -36,34 +36,29 @@ alias birch='ssh $SSH_X birch.local'
 alias aspen='ssh $SSH_X aspen.local'
 alias larch='ssh $SSH_X larch.local'
 alias ginkgo='ssh $SSH_X ginkgo.local'
+alias acacia='ssh $SSH_X acacia.local'
+alias oak='ssh $SSH_X 192.168.1.101'
 
 alias pithos='flatpak run io.github.Pithos'
 
 function setupGcc1030 {
 	echo "Setting up for gcc 10.3.0..."
 	export PATH=/opt/gcc1030/bin:$PATH
-	export LD_LIBRARY_PATH=/opt/gcc1030/lib64:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=/lib64:/opt/gcc1030/lib64:$LD_LIBRARY_PATH
 	export PS1="gcc1030 \h \w > "
 }
 
 function setupGcc940 {
 	echo "Setting up for gcc 9.4.0..."
 	export PATH=/opt/gcc940/bin:$PATH
-	export LD_LIBRARY_PATH=/opt/gcc940/lib64:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=/lib64:/opt/gcc940/lib64:$LD_LIBRARY_PATH
 	export PS1="gcc940 \h \w > "
-}
-
-function setupGcc910 {
-	echo "Setting up for gcc 9.1.0..."
-	export PATH=/opt/gcc910/bin:$PATH
-	export LD_LIBRARY_PATH=/opt/gcc910/lib64:$LD_LIBRARY_PATH
-	export PS1="gcc910 \h \w > "
 }
 
 function setupGcc840 {
         echo "Setting up for gcc 8.4.0..."
         export PATH=/opt/gcc840/bin:$PATH
-        export LD_LIBRARY_PATH=/opt/gcc840/lib64:$LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH=/lib64:/opt/gcc840/lib64:$LD_LIBRARY_PATH
         export PS1="gcc840 \h \w > "
 }
 
@@ -71,7 +66,7 @@ function setupGcc840 {
 function setupGcc740 {
 	echo "Setting up for gcc 7.4.0..."
 	export PATH=/opt/gcc740/bin:$PATH
-	export LD_LIBRARY_PATH=/opt/gcc740/lib64:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=/lib64:$LD_LIBRARY_PATH:/opt/gcc740/lib64
 	export PS1="gcc740 \h \w > "
 }
 
@@ -79,7 +74,7 @@ function setupGcc740 {
 function setupGcc650 {
 	echo "Setting up for gcc 6.5.0..."
 	export PATH=/opt/gcc650/bin:$PATH
-	export LD_LIBRARY_PATH=/opt/gcc650/lib64:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=/lib64:/opt/gcc650/lib64:$LD_LIBRARY_PATH
 	export PS1="gcc650 \h \w > "
 }
 
@@ -87,14 +82,14 @@ function setupGcc650 {
 function setupGcc530 {
 	echo "Setting up for gcc 5.3.0..."
 	export PATH=/usr/local/gcc53/bin:$PATH
-	export LD_LIBRARY_PATH=/usr/local/gcc53/lib64:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=/lib64:/usr/local/gcc53/lib64:$LD_LIBRARY_PATH
 	export PS1="gcc530 \h \w > "
 }
 
 function setupGcc493 {
 	echo "Setting up for gcc 4.9.3..."
 	export PATH=/usr/local/gcc493/bin:$PATH
-	export LD_LIBRARY_PATH=/usr/local/gcc493/lib64:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=/lib64:/usr/local/gcc493/lib64:$LD_LIBRARY_PATH
 	export PS1="gcc490 \h \w > "
 }
 
@@ -106,7 +101,6 @@ function setupCC65 {
 
 alias gcc1030='setupGcc1030'
 alias gcc940='setupGcc940'
-alias gcc910='setupGcc910'
 alias gcc840='setupGcc840'
 alias gcc740='setupGcc740'
 alias gcc650='setupGcc650'

@@ -24,7 +24,9 @@ export PATH=$HOME/bin:$PATH
 
 case $os in
 Linux)
-	export PATH=/opt/cc65/bin:/usr/local/bin:$HOME/.local/bin:$PATH
+	export PATH=$HOME/apache-maven-3.8.4/bin:/opt/cc65/bin:/usr/local/bin:$HOME/.local/bin:$PATH
+
+	export LD_LIBRARY_PATH=/usr/local/lib64:$LD_LIBRARY_PATH
 
 	export MANPATH=/usr/local/man:$MANPATH
 
