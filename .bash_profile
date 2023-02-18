@@ -21,10 +21,11 @@ host=$(hostname)
 
 export PATH=$HOME/bin:$PATH
 
+export GOPATH=$HOME/go
 
 case $os in
 Linux)
-	export PATH=$HOME/apache-maven-3.8.4/bin:/opt/cc65/bin:/usr/local/bin:$HOME/.local/bin:$PATH
+	export PATH=/usr/local/go/bin:/opt/cc65/bin:/usr/local/bin:$HOME/.local/bin:$PATH
 
 	export LD_LIBRARY_PATH=/usr/local/lib64:$LD_LIBRARY_PATH
 

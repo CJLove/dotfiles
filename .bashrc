@@ -37,9 +37,13 @@ alias aspen='ssh $SSH_X aspen.local'
 alias larch='ssh $SSH_X larch.local'
 alias ginkgo='ssh $SSH_X ginkgo.local'
 alias acacia='ssh $SSH_X acacia.local'
-alias oak='ssh $SSH_X 192.168.1.101'
+alias balsa='ssh $SSH_X balsa.love.io'
+alias apple='ssh $SSH_X apple.love.io'
+alias palm='ssh $SSH_X palm.love.io'
+alias cork='ssh $SSH_X cork.love.io'
+alias oak='ssh $SSH_X oak.love.io'
+alias elm='ssh $SSH_X elm.local'
 
-alias pithos='flatpak run io.github.Pithos'
 
 function setupGcc1030 {
 	echo "Setting up for gcc 10.3.0..."
