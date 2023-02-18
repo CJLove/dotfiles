@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # Common bash profile
 #
@@ -17,7 +18,6 @@ export SSH_X="-Y"
 os=$(uname -s)
 arch=$(uname -p)
 kern=$(uname -r)
-host=$(hostname)
 
 export PATH=$HOME/bin:$PATH
 
@@ -50,10 +50,11 @@ esac
 #
 # Handle host-specific additions
 #
-if [ -d $HOME/.bash_profile.d ]; then
-	for file in $HOME/.bash_profile.d/*.sh
+if [ -d "$HOME"/.bash_profile.d ]; then
+	for file in "$HOME"/.bash_profile.d/*.sh
 	do
-		. $file
+		# shellcheck source=/dev/null
+		. "$file"
 	done
 fi
 
@@ -64,11 +65,10 @@ fi
 #
 # Get aliases for other local machines
 #
-if [ -f ~/.bashrc ]; then
-	. ~/.bashrc
+if [ -f "$HOME/.bashrc" ]; then
+	# shellcheck source=/dev/null
+	. "$HOME/.bashrc"
 fi
-
-
 
 #
 # Prompts
@@ -91,10 +91,12 @@ if [[ "$arch" == "s390x" ]]; then
 fi
 export PS1='$wslhost \w > '
 if [ -f ~/.git-completion.sh ]; then
-	source ~/.git-completion.sh
+	# shellcheck source=/dev/null
+	source "$HOME/.git-completion.sh"
 fi
 if [ -f ~/.git-prompt.sh ]; then
-	source ~/.git-prompt.sh
+	# shellcheck source=/dev/null
+	source "$HOME/.git-prompt.sh"
 	#export PS1='\h \w $(__git_ps1 " (%s)") > '
 
 	export PS1="$wslhost"' \w $(__git_ps1 "(%s)") > '

@@ -1,3 +1,4 @@
+#!/bin/bash
 # .bashrc
 
 # User specific aliases and functions
