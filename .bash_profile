@@ -8,6 +8,8 @@
 #
 export SSH_X="-Y"
 
+export EDITOR=vim
+
 #
 # GIT setup
 #
@@ -26,6 +28,7 @@ export GOPATH=$HOME/go
 case $os in
 Linux)
 	export PATH=/usr/local/go/bin:/opt/cc65/bin:/usr/local/bin:$HOME/.local/bin:$PATH
+	[ -d /var/lib/snapd/snap/bin ] && export PATH=/var/lib/snapd/snap/bin:$PATH
 
 	export LD_LIBRARY_PATH=/usr/local/lib64:$LD_LIBRARY_PATH
 
