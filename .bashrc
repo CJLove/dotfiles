@@ -133,16 +133,18 @@ alias lx16test='cd $HOME/Development/libX16Test'
 
 function s390x {
 	cp /etc/passwd /tmp/passwd.$$
-	echo "$USER:x $(id -u):$(id -g):$USER:$HOME:/bin/bash" >> /tmp/passwd
+	echo "$USER:x $(id -u):$(id -g):$USER:$HOME:/bin/bash" >> /tmp/passwd.$$
 	cp /etc/group /tmp/group.$$
-	echo "$USER:x:$(id -g)" >> /tmp/group.$$
+	echo "$USER:x:$(id -g):" >> /tmp/group.$$
 
 	podman run --rm -it \
 		--net=host \
+		--userns=keep-id \
+		--privileged \
 		-u $(id -u):$(id -g) \
-		-v $HOME:$HOME \
 		-v /tmp/passwd.$$:/etc/passwd \
 		-v /tmp/group.$$:/etc/group \
+		-v $HOME:$HOME \
 		--cap-add=SYS_PTRACE \
 		fir.love.io:3005/s390x/ubuntu-s390x /bin/bash -l
 
