@@ -139,7 +139,6 @@ function s390x {
 
 	podman run --rm -it \
 		--net=host \
-		--userns=keep-id \
 		--privileged \
 		-u $(id -u):$(id -g) \
 		-v /tmp/passwd.$$:/etc/passwd \
