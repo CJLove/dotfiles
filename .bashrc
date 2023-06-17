@@ -131,4 +131,22 @@ alias cr='cd $HOME/Development/x16-ChopperRaid'
 alias lx16='cd $HOME/Development/libX16'
 alias lx16test='cd $HOME/Development/libX16Test'
 
-alias s390x='podman run --rm -it --net host -v /home/love:/root/ --cap-add sys_ptrace fir.local:3005/s390x/ubuntu-s390x /bin/bash -l'
+function s390x {
+	cp /etc/passwd /tmp/passwd.$$
+	echo "$USER:x $(id -u):$(id -g):$USER:$HOME:/bin/bash" >> /tmp/passwd
+	cp /etc/group /tmp/group.$$
+	echo "$USER:x:$(id -g)" >> /tmp/group.$$
+
+	podman run --rm -it \
+		--net=host \
+		-u $(id -u):$(id -g) \
+		-v $HOME:$HOME \
+		-v /tmp/passwd.$$:/etc/passwd \
+		-v /tmp/group.$$:/etc/group \
+		--cap-add=SYS_PTRACE \
+		fir.love.io:3005/s390x/ubuntu-s390x /bin/bash -l
+
+	rm -f /tmp/passwd.$$ /tmp/group.$$
+}
+
+#alias s390x='podman run --rm -it -u $(id -u):$(id -g) --net host -v /home/love:/root/ --cap-add sys_ptrace fir.love.io:3005/s390x/ubuntu-s390x /bin/bash -l'
