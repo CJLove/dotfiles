@@ -6,6 +6,10 @@
 
 [merge]
 	tool = meld
+[difftool]
+  prompt = false
+[difftool "meld"]
+  cmd = meld "$LOCAL" "$REMOTE"
 [color]
   ui = true
 [color "branch"]

@@ -5,10 +5,9 @@
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
+	# shellcheck source=/dev/null
 	. /etc/bashrc
 fi
-
-[ -d $HOME/.cargo ] && source $HOME/.cargo/env
 
 #
 # General aliases
@@ -85,12 +84,12 @@ function devImage {
 	docker run --rm -it \
 		--net=host \
 		--privileged \
-		-u $(id -u):$(id -g) \
+		-u "$(id -u):$(id -g)" \
 		-v /tmp/passwd.$$:/etc/passwd \
 		-v /tmp/group.$$:/etc/group \
-		-v $HOME:$HOME \
+		-v "$HOME:$HOME" \
 		--cap-add=SYS_PTRACE \
-		fir.love.io:3005/amd64/$IMAGE:latest /bin/bash -l 
+		"fir.love.io:3005/amd64/$IMAGE:latest" /bin/bash -l 
 
 	rm -f /tmp/passwd.$$ /tmp/group.$$	
 }
@@ -153,10 +152,10 @@ function s390x {
 		--net=host \
 		--privileged \
 		--userns=keep-id \
-		-u $(id -u):$(id -g) \
+		-u "$(id -u):$(id -g)" \
 		-v /tmp/passwd.$$:/etc/passwd \
 		-v /tmp/group.$$:/etc/group \
-		-v $HOME:$HOME \
+		-v "$HOME:$HOME" \
 		--cap-add=SYS_PTRACE \
 		fir.love.io:3005/s390x/ubuntu-s390x /bin/bash -l
 
