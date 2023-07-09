@@ -46,57 +46,7 @@ alias oak='ssh $SSH_X oak.love.io'
 alias elm='ssh $SSH_X elm.local'
 
 
-function setupGcc1030 {
-	echo "Setting up for gcc 10.3.0..."
-	export PATH=/opt/gcc1030/bin:$PATH
-	export LD_LIBRARY_PATH=/lib64:/opt/gcc1030/lib64:$LD_LIBRARY_PATH
-	export PS1="gcc1030 \h \w > "
-}
 
-function setupGcc940 {
-	echo "Setting up for gcc 9.4.0..."
-	export PATH=/opt/gcc940/bin:$PATH
-	export LD_LIBRARY_PATH=/lib64:/opt/gcc940/lib64:$LD_LIBRARY_PATH
-	export PS1="gcc940 \h \w > "
-}
-
-function setupGcc840 {
-        echo "Setting up for gcc 8.4.0..."
-        export PATH=/opt/gcc840/bin:$PATH
-        export LD_LIBRARY_PATH=/lib64:/opt/gcc840/lib64:$LD_LIBRARY_PATH
-        export PS1="gcc840 \h \w > "
-}
-
-
-function setupGcc740 {
-	echo "Setting up for gcc 7.4.0..."
-	export PATH=/opt/gcc740/bin:$PATH
-	export LD_LIBRARY_PATH=/lib64:$LD_LIBRARY_PATH:/opt/gcc740/lib64
-	export PS1="gcc740 \h \w > "
-}
-
-
-function setupGcc650 {
-	echo "Setting up for gcc 6.5.0..."
-	export PATH=/opt/gcc650/bin:$PATH
-	export LD_LIBRARY_PATH=/lib64:/opt/gcc650/lib64:$LD_LIBRARY_PATH
-	export PS1="gcc650 \h \w > "
-}
-
-
-function setupGcc530 {
-	echo "Setting up for gcc 5.3.0..."
-	export PATH=/usr/local/gcc53/bin:$PATH
-	export LD_LIBRARY_PATH=/lib64:/usr/local/gcc53/lib64:$LD_LIBRARY_PATH
-	export PS1="gcc530 \h \w > "
-}
-
-function setupGcc493 {
-	echo "Setting up for gcc 4.9.3..."
-	export PATH=/usr/local/gcc493/bin:$PATH
-	export LD_LIBRARY_PATH=/lib64:/usr/local/gcc493/lib64:$LD_LIBRARY_PATH
-	export PS1="gcc490 \h \w > "
-}
 
 function setupCC65 {
 	echo "Setting up for cc65 dev..."
@@ -104,13 +54,7 @@ function setupCC65 {
 	export PS1="cc65 dev \h \w > "
 }
 
-alias gcc1030='setupGcc1030'
-alias gcc940='setupGcc940'
-alias gcc840='setupGcc840'
-alias gcc740='setupGcc740'
-alias gcc650='setupGcc650'
-alias gcc530='setupGcc530'
-alias gcc493='setupGcc493'
+
 alias cc65dev='setupCC65'
 
 alias dotfiles='cd ~/dotfiles'
@@ -131,6 +75,74 @@ alias cr='cd $HOME/Development/x16-ChopperRaid'
 alias lx16='cd $HOME/Development/libX16'
 alias lx16test='cd $HOME/Development/libX16Test'
 
+function devImage {
+	IMAGE=$1
+	cp /etc/passwd /tmp/passwd.$$
+	echo "$USER:x $(id -u):$(id -g):$USER:$HOME:/bin/bash" >> /tmp/passwd.$$
+	cp /etc/group /tmp/group.$$
+	echo "$USER:x:$(id -g):" >> /tmp/group.$$
+
+	docker run --rm -it \
+		--net=host \
+		--privileged \
+		-u $(id -u):$(id -g) \
+		-v /tmp/passwd.$$:/etc/passwd \
+		-v /tmp/group.$$:/etc/group \
+		-v $HOME:$HOME \
+		--cap-add=SYS_PTRACE \
+		fir.love.io:3005/amd64/$IMAGE:latest /bin/bash -l 
+
+	rm -f /tmp/passwd.$$ /tmp/group.$$	
+}
+
+# serf-cpp aliases
+alias serf-cpp='cd $HOME/Development/serf-cpp'
+alias serf-cpp-gcc493='devImage serf-cpp-gcc493'
+alias serf-cpp-gcc530='devImage serf-cpp-gcc530'
+alias serf-cpp-gcc650='devImage serf-cpp-gcc650'
+alias serf-cpp-gcc740='devImage serf-cpp-gcc740'
+alias serf-cpp-gcc840='devImage serf-cpp-gcc840'
+alias serf-cpp-gcc940='devImage serf-cpp-gcc940'
+alias serf-cpp-gcc1030='devImage serf-cpp-gcc1030'
+alias serf-cpp-gcc1130='devImage serf-cpp-gcc1130'
+alias serf-cpp-gcc1230='devImage serf-cpp-gcc1230'
+
+# config-cpp aliases
+alias config-cpp='cd $HOME/Development/config-cpp'
+alias config-cpp-gcc650='devImage config-cpp-gcc650'
+alias config-cpp-gcc740='devImage config-cpp-gcc740'
+alias config-cpp-gcc840='devImage config-cpp-gcc840'
+alias config-cpp-gcc940='devImage config-cpp-gcc940'
+alias config-cpp-gcc1030='devImage config-cpp-gcc1030'
+alias config-cpp-gcc1130='devImage config-cpp-gcc1130'
+alias config-cpp-gcc1230='devImage config-cpp-gcc1230'
+
+# msglib-cpp aliases
+alias msglib-cpp='cd $HOME/Development/msglib-cpp'
+alias msglib-cpp-gcc940='devImage msglib-cpp-gcc940'
+alias msglib-cpp-gcc1030='devImage msglib-cpp-gcc1030'
+alias msglib-cpp-gcc1130='devImage msglib-cpp-gcc1130'
+alias msglib-cpp-gcc1230='devImage msglib-cpp-gcc1230'
+
+# sockets-cpp aliases
+alias sockets-cpp='cd $HOME/Development/sockets-cpp'
+alias sockets-cpp-gcc840='devImage sockets-cpp-gcc840'
+alias sockets-cpp-gcc940='devImage sockets-cpp-gcc940'
+alias sockets-cpp-gcc1030='devImage sockets-cpp-gcc1030'
+alias sockets-cpp-gcc1130='devImage sockets-cpp-gcc1130'
+alias sockets-cpp-gcc1230='devImage sockets-cpp-gcc1230'
+
+# gcc aliases
+alias gcc1230='devImage gcc1230'
+alias gcc1130='devImage gcc1130'
+alias gcc1030='devImage gcc1030'
+alias gcc940='devImage gcc940'
+alias gcc840='devImage gcc840'
+alias gcc740='devImage gcc740'
+alias gcc650='devImage gcc650'
+alias gcc530='devImage gcc530'
+alias gcc493='devImage gcc493'
+
 function s390x {
 	cp /etc/passwd /tmp/passwd.$$
 	echo "$USER:x $(id -u):$(id -g):$USER:$HOME:/bin/bash" >> /tmp/passwd.$$
@@ -140,6 +152,7 @@ function s390x {
 	podman run --rm -it \
 		--net=host \
 		--privileged \
+		--userns=keep-id \
 		-u $(id -u):$(id -g) \
 		-v /tmp/passwd.$$:/etc/passwd \
 		-v /tmp/group.$$:/etc/group \
