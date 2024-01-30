@@ -43,6 +43,8 @@ alias palm='ssh $SSH_X palm.love.io'
 alias cork='ssh $SSH_X cork.love.io'
 alias oak='ssh $SSH_X oak.love.io'
 alias elm='ssh $SSH_X elm.local'
+alias maple='ssh $SSH_X maple.love.io'
+alias dns='ssh $SSH_X dnsbackup.love.io'
 
 
 
@@ -93,6 +95,10 @@ function devImage {
 
 	rm -f /tmp/passwd.$$ /tmp/group.$$	
 }
+
+# cpp-multiarch aliases
+alias multiarch='cd $HOME/Development/cpp-multiarch'
+alias multiarch-gcc1321='devImage multiarch-gcc1321'
 
 # serf-cpp aliases
 alias serf-cpp='cd $HOME/Development/serf-cpp'
