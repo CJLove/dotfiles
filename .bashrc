@@ -137,6 +137,8 @@ alias sockets-cpp-gcc1030='devImage sockets-cpp-gcc1030'
 alias sockets-cpp-gcc1130='devImage sockets-cpp-gcc1130'
 alias sockets-cpp-gcc1230='devImage sockets-cpp-gcc1230'
 
+alias zmqcross-gcc1321='devImage zmqcross-gcc1321'
+
 # gcc aliases
 alias gcc1230='devImage gcc1230'
 alias gcc1130='devImage gcc1130'

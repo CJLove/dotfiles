@@ -37,6 +37,7 @@ Linux)
 	export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH
 
 	export KUBECONFIG=$HOME/.kube/config
+	[ -x /usr/local/bin/kubectl ] && source $HOME/dotfiles/kubectl.completion.bash.inc
 
 	;;
 CYGWIN*)
