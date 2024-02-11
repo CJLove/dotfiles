@@ -36,6 +36,8 @@ Linux)
 
 	export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH
 
+	export KUBECONFIG=$HOME/.kube/config
+
 	;;
 CYGWIN*)
 	export PATH=/opt/cc65/bin:/usr/local/bin:$PATH
