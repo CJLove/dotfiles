@@ -45,6 +45,13 @@ alias oak='ssh $SSH_X oak.love.io'
 alias elm='ssh $SSH_X elm.local'
 alias maple='ssh $SSH_X maple.love.io'
 alias dns='ssh $SSH_X dnsbackup.love.io'
+alias rocky='ssh $SSH_X rockytest.love.io'
+alias rocky2='ssh $SSH_X rockytest2.love.io'
+alias rocky8='ssh $SSH_X rocky8.love.io'
+alias harbor='ssh $SSH_X harbor.love.io'
+alias net1='ssh $SSH_X net1.local'
+alias net2='ssh $SSH_X net2.local'
+
 
 
 
@@ -53,6 +60,13 @@ function setupCC65 {
 	echo "Setting up for cc65 dev..."
 	export PATH=/opt/cc65/bin:$PATH
 	export PS1="cc65 dev \h \w > "
+}
+
+function screenlock {
+	mode=$1
+
+	gsettings set org.gnome.desktop.screensaver lock-enabled $mode
+	echo "Screenlock mode set to $mode"
 }
 
 
@@ -98,7 +112,7 @@ function devImage {
 
 # cpp-multiarch aliases
 alias multiarch='cd $HOME/Development/cpp-multiarch'
-alias multiarch-gcc1321='devImage multiarch-gcc1321'
+alias multiarch-gcc1421='devImage multiarch-gcc1421'
 
 # serf-cpp aliases
 alias serf-cpp='cd $HOME/Development/serf-cpp'
@@ -121,6 +135,7 @@ alias config-cpp-gcc940='devImage config-cpp-gcc940'
 alias config-cpp-gcc1030='devImage config-cpp-gcc1030'
 alias config-cpp-gcc1130='devImage config-cpp-gcc1130'
 alias config-cpp-gcc1230='devImage config-cpp-gcc1230'
+alias config-cpp-gcc1330='devImage config-cpp-gcc1330'
 
 # msglib-cpp aliases
 alias msglib-cpp='cd $HOME/Development/msglib-cpp'
@@ -128,6 +143,8 @@ alias msglib-cpp-gcc940='devImage msglib-cpp-gcc940'
 alias msglib-cpp-gcc1030='devImage msglib-cpp-gcc1030'
 alias msglib-cpp-gcc1130='devImage msglib-cpp-gcc1130'
 alias msglib-cpp-gcc1230='devImage msglib-cpp-gcc1230'
+alias msglib-cpp-gcc1330='devImage msglib-cpp-gcc1330'
+alias msglib-cpp-gcc1421='devImage msglib-cpp-gcc1421'
 
 # sockets-cpp aliases
 alias sockets-cpp='cd $HOME/Development/sockets-cpp'
@@ -136,10 +153,14 @@ alias sockets-cpp-gcc940='devImage sockets-cpp-gcc940'
 alias sockets-cpp-gcc1030='devImage sockets-cpp-gcc1030'
 alias sockets-cpp-gcc1130='devImage sockets-cpp-gcc1130'
 alias sockets-cpp-gcc1230='devImage sockets-cpp-gcc1230'
+alias sockets-cpp-gcc1330='devImage sockets-cpp-gcc1330'
+alias sockets-cpp-gcc1421='devImage sockets-cpp-gcc1421'
 
-alias zmqcross-gcc1321='devImage zmqcross-gcc1321'
+alias zmqcross-gcc1421='devImage zmqcross-gcc1421'
 
 # gcc aliases
+alias gcc1421='devImage gcc1421'
+alias gcc1330='devImage gcc1330'
 alias gcc1230='devImage gcc1230'
 alias gcc1130='devImage gcc1130'
 alias gcc1030='devImage gcc1030'
@@ -149,6 +170,7 @@ alias gcc740='devImage gcc740'
 alias gcc650='devImage gcc650'
 alias gcc530='devImage gcc530'
 alias gcc493='devImage gcc493'
+alias cross1421='devImage cross-gcc1421'
 
 function s390x {
 	cp /etc/passwd /tmp/passwd.$$

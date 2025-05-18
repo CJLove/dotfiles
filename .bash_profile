@@ -27,7 +27,11 @@ export GOPATH=$HOME/go
 
 case $os in
 Linux)
-	export PATH=/usr/local/go/bin:/opt/cc65/bin:/usr/local/bin:$HOME/.local/bin:$PATH
+	export PATH=$GOPATH/bin:/opt/cc65/bin:/usr/local/bin:$HOME/.local/bin:$PATH
+	[ -d $HOME/vcpkg ] && {
+		export PATH=$HOME/vcpkg:$PATH
+		export VCPKG_ROOT=$HOME/vcpkg
+	}
 	[ -d /var/lib/snapd/snap/bin ] && export PATH=/var/lib/snapd/snap/bin:$PATH
 
 	export LD_LIBRARY_PATH=/usr/local/lib64:$LD_LIBRARY_PATH
@@ -37,7 +41,13 @@ Linux)
 	export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH
 
 	export KUBECONFIG=$HOME/.kube/config
-	[ -x /usr/local/bin/kubectl ] && source $HOME/dotfiles/kubectl.completion.bash.inc
+	if [ -x /usr/local/bin/kubectl ]; then
+		source $HOME/dotfiles/kubectl.completion.bash.inc
+		alias 'k=kubectl'
+		complete -o default -F __start_kubectl k
+	fi
+	[ -x /usr/local/bin/flux ] && source $HOME/dotfiles/flux.completion.bash.inc
+	[ -x /usr/local/bin/helm ] && source $HOME/dotfiles/helm.completion.bash.inc
 
 	;;
 CYGWIN*)
